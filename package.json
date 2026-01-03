@@ -27,7 +27,7 @@
         "@x1mrdonut1x/nouislider-react": "^3.4.3",
         "apexcharts": "^3.37.1",
         "easymde": "^2.18.0",
-        "eslint": "8.57.0",
+        "eslint": "^9.0.0",
         "eslint-config-next": "^16.1.1",
         "formik": "^2.2.9",
         "highlight.js": "^11.7.0",
