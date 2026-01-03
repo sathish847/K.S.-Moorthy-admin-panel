@@ -17,7 +17,8 @@ import IconUser from '@/components/icon/icon-user';
 import { IRootState } from '@/store';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import ReactApexChart from 'react-apexcharts';
+import dynamic from 'next/dynamic';
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { useSelector } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
