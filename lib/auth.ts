@@ -52,6 +52,7 @@ export const authOptions: NextAuthOptions = {
     pages: {
         signIn: '/auth/cover-login',
     },
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
