@@ -35,6 +35,7 @@ interface Blog {
     mediumLinkEnabled: boolean;
     status: string;
     slug: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -74,7 +75,14 @@ const ComponentsAppsBlogs = () => {
                 }
 
                 const data = await response.json();
-                setBlogs(data.blogs || []);
+                // Sort blogs by order ascending, then by createdAt descending
+                const sortedBlogs = (data.blogs || []).sort((a: Blog, b: Blog) => {
+                    if (a.order !== b.order) {
+                        return a.order - b.order;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                setBlogs(sortedBlogs);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
             } finally {
@@ -157,7 +165,14 @@ const ComponentsAppsBlogs = () => {
                     }
 
                     const data = await response.json();
-                    setBlogs(data.blogs || []);
+                    // Sort blogs by order ascending, then by createdAt descending
+                    const sortedBlogs = (data.blogs || []).sort((a: Blog, b: Blog) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                    });
+                    setBlogs(sortedBlogs);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : 'Failed to fetch blogs');
                 }
@@ -176,7 +191,7 @@ const ComponentsAppsBlogs = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">article</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Blogs</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Thoughts</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewBlog}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />
@@ -422,7 +437,11 @@ const ComponentsAppsBlogs = () => {
                                                 )}
 
                                                 {/* Stats */}
-                                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedBlog.order}</div>
+                                                        <div className="text-sm text-gray-500">Display Order</div>
+                                                    </div>
                                                     <div className="text-center">
                                                         <div className="text-2xl font-bold text-primary">{selectedBlog.tags.length}</div>
                                                         <div className="text-sm text-gray-500">Tags</div>

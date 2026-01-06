@@ -29,6 +29,7 @@ interface Event {
     duration: string;
     knowMoreLink: string;
     knowMoreLinkEnabled: boolean;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -68,7 +69,14 @@ const ComponentsAppsEvents = () => {
                 }
 
                 const data = await response.json();
-                setEvents(data.events || []);
+                // Sort events by order ascending, then by createdAt descending
+                const sortedEvents = (data.events || []).sort((a: Event, b: Event) => {
+                    if (a.order !== b.order) {
+                        return a.order - b.order;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                setEvents(sortedEvents);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch events');
             } finally {
@@ -151,7 +159,14 @@ const ComponentsAppsEvents = () => {
                     }
 
                     const data = await response.json();
-                    setEvents(data.events || []);
+                    // Sort events by order ascending, then by createdAt descending
+                    const sortedEvents = (data.events || []).sort((a: Event, b: Event) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                    });
+                    setEvents(sortedEvents);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : 'Failed to fetch events');
                 }
@@ -170,7 +185,7 @@ const ComponentsAppsEvents = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">event</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Events</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Moments</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewEvent}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />
@@ -423,7 +438,11 @@ const ComponentsAppsEvents = () => {
                                                 )}
 
                                                 {/* Stats */}
-                                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedEvent.order}</div>
+                                                        <div className="text-sm text-gray-500">Display Order</div>
+                                                    </div>
                                                     <div className="text-center">
                                                         <div className="text-2xl font-bold text-primary">{selectedEvent.tags.length}</div>
                                                         <div className="text-sm text-gray-500">Tags</div>

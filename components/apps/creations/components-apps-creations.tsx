@@ -21,6 +21,7 @@ interface CreationItem {
     category: string;
     status: string;
     image: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -61,7 +62,14 @@ const ComponentsAppsCreations = () => {
                 }
 
                 const data = await response.json();
-                setCreationItems(data.works || []);
+                // Sort creation items by order ascending, then by createdAt descending
+                const sortedCreationItems = (data.works || []).sort((a: CreationItem, b: CreationItem) => {
+                    if (a.order !== b.order) {
+                        return a.order - b.order;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                setCreationItems(sortedCreationItems);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch creation items');
             } finally {
@@ -145,7 +153,14 @@ const ComponentsAppsCreations = () => {
                     }
 
                     const data = await response.json();
-                    setCreationItems(data.works || []);
+                    // Sort creation items by order ascending, then by createdAt descending
+                    const sortedCreationItems = (data.works || []).sort((a: CreationItem, b: CreationItem) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                    });
+                    setCreationItems(sortedCreationItems);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : 'Failed to fetch creation items');
                 }
@@ -236,6 +251,7 @@ const ComponentsAppsCreations = () => {
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <h3 className="text-lg font-semibold text-primary">{item.title}</h3>
                                                     <span className={`badge ${item.status === 'active' ? 'badge-outline-success' : 'badge-outline-danger'}`}>{item.status}</span>
+                                                    <span className="badge badge-outline-primary">Order: {item.order}</span>
                                                 </div>
                                                 <p className="text-gray-600 dark:text-gray-400 mb-2">Category: {item.category}</p>
                                                 <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
@@ -373,6 +389,18 @@ const ComponentsAppsCreations = () => {
                                                         </div>
                                                     </div>
                                                 )}
+
+                                                {/* Stats */}
+                                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedCreationItem.order}</div>
+                                                        <div className="text-sm text-gray-500">Display Order</div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedCreationItem.status === 'active' ? 'Active' : 'Inactive'}</div>
+                                                        <div className="text-sm text-gray-500">Status</div>
+                                                    </div>
+                                                </div>
 
                                                 {/* Timestamps */}
                                                 <div className="pt-4 border-t border-gray-200 dark:border-gray-700">

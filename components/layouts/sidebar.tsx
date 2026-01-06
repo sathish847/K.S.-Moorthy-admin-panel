@@ -178,7 +178,7 @@ const Sidebar = () => {
                                         <Link href="/apps/blogs" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuApps className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Blogs</span>
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Thoughts</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -186,7 +186,7 @@ const Sidebar = () => {
                                         <Link href="/apps/events" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuApps className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Events</span>
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Moments</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -194,7 +194,7 @@ const Sidebar = () => {
                                         <Link href="/apps/services" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuApps className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Services</span>
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">What I Create</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -202,7 +202,7 @@ const Sidebar = () => {
                                         <Link href="/apps/gallery" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuApps className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Gallery</span>
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Visual Diary</span>
                                             </div>
                                         </Link>
                                     </li>
@@ -210,7 +210,7 @@ const Sidebar = () => {
                                         <Link href="/apps/hero-slider" className="group">
                                             <div className="flex items-center">
                                                 <IconMenuApps className="shrink-0 group-hover:!text-primary" />
-                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Hero Slider</span>
+                                                <span className="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Home Slider</span>
                                             </div>
                                         </Link>
                                     </li>

@@ -22,6 +22,7 @@ interface Service {
     images: string[];
     paragraphs: string[];
     status: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -61,7 +62,14 @@ const ComponentsAppsServices = () => {
                 }
 
                 const data = await response.json();
-                setServices(data.services || []);
+                // Sort services by order ascending, then by createdAt descending
+                const sortedServices = (data.services || []).sort((a: Service, b: Service) => {
+                    if (a.order !== b.order) {
+                        return a.order - b.order;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                setServices(sortedServices);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch services');
             } finally {
@@ -140,7 +148,14 @@ const ComponentsAppsServices = () => {
                     }
 
                     const data = await response.json();
-                    setServices(data.services || []);
+                    // Sort services by order ascending, then by createdAt descending
+                    const sortedServices = (data.services || []).sort((a: Service, b: Service) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                    });
+                    setServices(sortedServices);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : 'Failed to fetch services');
                 }
@@ -159,7 +174,7 @@ const ComponentsAppsServices = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">build</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Services</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">What I Create</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewService}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />
@@ -371,7 +386,11 @@ const ComponentsAppsServices = () => {
                                                 )}
 
                                                 {/* Stats */}
-                                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedService.order}</div>
+                                                        <div className="text-sm text-gray-500">Display Order</div>
+                                                    </div>
                                                     <div className="text-center">
                                                         <div className="text-2xl font-bold text-primary">{selectedService.paragraphs ? selectedService.paragraphs.length : 0}</div>
                                                         <div className="text-sm text-gray-500">Paragraphs</div>

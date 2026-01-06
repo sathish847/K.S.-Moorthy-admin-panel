@@ -10,6 +10,7 @@ interface ServiceFormData {
     title: string;
     paragraphs: string;
     status: 'active' | 'inactive';
+    order: number;
 }
 
 const ComponentsAppsServiceCreate = () => {
@@ -23,6 +24,7 @@ const ComponentsAppsServiceCreate = () => {
         title: '',
         paragraphs: '',
         status: 'active',
+        order: 0,
     });
     const [errors, setErrors] = useState<Partial<ServiceFormData>>({});
 
@@ -97,6 +99,7 @@ const ComponentsAppsServiceCreate = () => {
             formDataToSend.append('title', formData.title);
             formDataToSend.append('paragraphs', JSON.stringify(formData.paragraphs.split('\n\n').filter((p) => p.trim())));
             formDataToSend.append('status', formData.status);
+            formDataToSend.append('order', formData.order.toString());
 
             // Add main image file if selected
             if (images.length > 0) {
@@ -227,6 +230,21 @@ const ComponentsAppsServiceCreate = () => {
                     />
                     <p className="text-gray-500 text-sm mt-1">Separate paragraphs with blank lines</p>
                     {errors.paragraphs && <p className="text-red-500 text-sm mt-1">{errors.paragraphs}</p>}
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

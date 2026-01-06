@@ -9,6 +9,7 @@ interface CreationFormData {
     category: string;
     status: 'active' | 'inactive';
     image: File | null;
+    order: number;
 }
 
 const ComponentsAppsCreationsCreate = () => {
@@ -21,6 +22,7 @@ const ComponentsAppsCreationsCreate = () => {
         category: '',
         status: 'active',
         image: null,
+        order: 0,
     });
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [errors, setErrors] = useState<Partial<Record<keyof CreationFormData, string>>>({});
@@ -154,6 +156,7 @@ const ComponentsAppsCreationsCreate = () => {
             formDataToSend.append('title', formData.title);
             formDataToSend.append('category', formData.category);
             formDataToSend.append('status', formData.status);
+            formDataToSend.append('order', formData.order.toString());
             if (formData.image) {
                 formDataToSend.append('image', formData.image);
             }
@@ -236,6 +239,21 @@ const ComponentsAppsCreationsCreate = () => {
                             <img src={imagePreview} alt="Preview" className="max-w-xs max-h-48 object-cover rounded-lg border" />
                         </div>
                     )}
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

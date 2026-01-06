@@ -9,6 +9,7 @@ interface GalleryFormData {
     description: string;
     youtubeUrl: string;
     status: 'active' | 'inactive';
+    order: number;
 }
 
 interface GalleryItem {
@@ -17,6 +18,7 @@ interface GalleryItem {
     description: string;
     youtubeUrl: string;
     status: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -34,6 +36,7 @@ const ComponentsAppsGalleryEdit = () => {
         description: '',
         youtubeUrl: '',
         status: 'active',
+        order: 0,
     });
     const [errors, setErrors] = useState<Partial<GalleryFormData>>({});
 
@@ -65,6 +68,7 @@ const ComponentsAppsGalleryEdit = () => {
                         description: galleryItem.description,
                         youtubeUrl: galleryItem.youtubeUrl,
                         status: galleryItem.status as 'active' | 'inactive',
+                        order: galleryItem.order || 0,
                     });
                 } else {
                     alert('Gallery item not found');
@@ -211,6 +215,21 @@ const ComponentsAppsGalleryEdit = () => {
                     />
                     <p className="text-gray-500 text-sm mt-1">Enter a valid YouTube URL or Instagram link</p>
                     {errors.youtubeUrl && <p className="text-red-500 text-sm mt-1">{errors.youtubeUrl}</p>}
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

@@ -11,6 +11,7 @@ interface ServiceFormData {
     paragraphs?: string;
     images?: string;
     status?: 'active' | 'inactive';
+    order?: number;
 }
 
 interface Service {
@@ -20,6 +21,7 @@ interface Service {
     images: string[];
     paragraphs: string[];
     status: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -67,6 +69,7 @@ const ComponentsAppsServiceEdit = () => {
                         title: service.title,
                         paragraphs: service.paragraphs ? service.paragraphs.join('\n\n') : '',
                         status: service.status as 'active' | 'inactive',
+                        order: service.order || 0,
                     });
 
                     // Set existing image if available
@@ -152,6 +155,10 @@ const ComponentsAppsServiceEdit = () => {
 
             if (formData.status !== undefined && formData.status !== originalService.status) {
                 formDataToSend.append('status', formData.status);
+            }
+
+            if (formData.order !== undefined && formData.order !== originalService.order) {
+                formDataToSend.append('order', formData.order.toString());
             }
 
             // Add main image file if a new one is selected (not just the existing preview)
@@ -302,6 +309,21 @@ const ComponentsAppsServiceEdit = () => {
                     />
                     <p className="text-gray-500 text-sm mt-1">Separate paragraphs with blank lines</p>
                     {errors.paragraphs && <p className="text-red-500 text-sm mt-1">{errors.paragraphs}</p>}
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order || 0}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

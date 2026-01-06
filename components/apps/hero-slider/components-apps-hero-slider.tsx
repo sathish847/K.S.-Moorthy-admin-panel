@@ -165,7 +165,7 @@ const ComponentsAppsHeroSlider = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">view_carousel</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Hero Slider</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Home Slider</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewSlider}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />

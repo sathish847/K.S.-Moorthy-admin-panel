@@ -21,6 +21,7 @@ interface GalleryItem {
     description: string;
     youtubeUrl: string;
     status: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -95,7 +96,14 @@ const ComponentsAppsGallery = () => {
                 }
 
                 const data = await response.json();
-                setGalleryItems(data.gallery || []);
+                // Sort gallery items by order ascending, then by createdAt descending
+                const sortedGalleryItems = (data.gallery || []).sort((a: GalleryItem, b: GalleryItem) => {
+                    if (a.order !== b.order) {
+                        return a.order - b.order;
+                    }
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
+                setGalleryItems(sortedGalleryItems);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Failed to fetch gallery items');
             } finally {
@@ -175,7 +183,14 @@ const ComponentsAppsGallery = () => {
                     }
 
                     const data = await response.json();
-                    setGalleryItems(data.gallery || []);
+                    // Sort gallery items by order ascending, then by createdAt descending
+                    const sortedGalleryItems = (data.gallery || []).sort((a: GalleryItem, b: GalleryItem) => {
+                        if (a.order !== b.order) {
+                            return a.order - b.order;
+                        }
+                        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                    });
+                    setGalleryItems(sortedGalleryItems);
                 } catch (err) {
                     setError(err instanceof Error ? err.message : 'Failed to fetch gallery items');
                 }
@@ -194,7 +209,7 @@ const ComponentsAppsGallery = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">video_library</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Gallery</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Visual Diary</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewGalleryItem}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />
@@ -415,6 +430,18 @@ const ComponentsAppsGallery = () => {
                                                     <a href={selectedGalleryItem.youtubeUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                                                         {selectedGalleryItem.youtubeUrl}
                                                     </a>
+                                                </div>
+
+                                                {/* Stats */}
+                                                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedGalleryItem.order}</div>
+                                                        <div className="text-sm text-gray-500">Display Order</div>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <div className="text-2xl font-bold text-primary">{selectedGalleryItem.status === 'active' ? 'Active' : 'Inactive'}</div>
+                                                        <div className="text-sm text-gray-500">Status</div>
+                                                    </div>
                                                 </div>
 
                                                 {/* Timestamps */}

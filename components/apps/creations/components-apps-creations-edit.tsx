@@ -9,6 +9,7 @@ interface CreationFormData {
     category: string;
     status: 'active' | 'inactive';
     image: File | null;
+    order: number;
 }
 
 interface CreationItem {
@@ -17,6 +18,7 @@ interface CreationItem {
     category: string;
     status: string;
     image: string;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -35,6 +37,7 @@ const ComponentsAppsCreationsEdit = () => {
         category: '',
         status: 'active',
         image: null,
+        order: 0,
     });
     const [currentImage, setCurrentImage] = useState<string>('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -68,6 +71,7 @@ const ComponentsAppsCreationsEdit = () => {
                         category: creationItem.category,
                         status: creationItem.status as 'active' | 'inactive',
                         image: null, // Will be set if user uploads new image
+                        order: creationItem.order || 0,
                     });
                     setCurrentImage(creationItem.image);
 
@@ -184,6 +188,7 @@ const ComponentsAppsCreationsEdit = () => {
             formDataToSend.append('title', formData.title);
             formDataToSend.append('category', formData.category);
             formDataToSend.append('status', formData.status);
+            formDataToSend.append('order', formData.order.toString());
             if (formData.image) {
                 formDataToSend.append('image', formData.image);
             }
@@ -285,6 +290,21 @@ const ComponentsAppsCreationsEdit = () => {
                             <img src={imagePreview} alt="Preview" className="max-w-xs max-h-48 object-cover rounded-lg border" />
                         </div>
                     )}
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

@@ -18,6 +18,7 @@ interface EventFormData {
     knowMoreLink?: string;
     knowMoreLinkEnabled: boolean;
     status: 'upcoming' | 'completed';
+    order: number;
 }
 
 interface Event {
@@ -34,6 +35,7 @@ interface Event {
     duration: string;
     knowMoreLink: string;
     knowMoreLinkEnabled: boolean;
+    order: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -61,6 +63,7 @@ const ComponentsAppsEventEdit = () => {
         knowMoreLink: '',
         knowMoreLinkEnabled: true,
         status: 'upcoming',
+        order: 0,
     });
     const [errors, setErrors] = useState<Partial<EventFormData>>({});
 
@@ -99,6 +102,7 @@ const ComponentsAppsEventEdit = () => {
                         knowMoreLink: event.knowMoreLink || '',
                         knowMoreLinkEnabled: event.knowMoreLinkEnabled,
                         status: event.status as 'upcoming' | 'completed',
+                        order: event.order || 0,
                     });
 
                     // Set existing image if available
@@ -190,6 +194,7 @@ const ComponentsAppsEventEdit = () => {
             formDataToSend.append('knowMoreLink', formData.knowMoreLink || '');
             formDataToSend.append('knowMoreLinkEnabled', formData.knowMoreLinkEnabled.toString());
             formDataToSend.append('status', formData.status);
+            formDataToSend.append('order', formData.order.toString());
 
             // Add image file if a new one is selected (not just the existing preview)
             if (images.length > 0 && images[0].file) {
@@ -390,6 +395,21 @@ const ComponentsAppsEventEdit = () => {
                     <label htmlFor="knowMoreLinkEnabled" className="ltr:ml-2 rtl:mr-2">
                         Enable Know More Link
                     </label>
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}

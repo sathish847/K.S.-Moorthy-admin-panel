@@ -18,6 +18,7 @@ interface EventFormData {
     knowMoreLink?: string;
     knowMoreLinkEnabled: boolean;
     status: 'upcoming' | 'completed';
+    order: number;
 }
 
 const ComponentsAppsEventCreate = () => {
@@ -39,6 +40,7 @@ const ComponentsAppsEventCreate = () => {
         knowMoreLink: '',
         knowMoreLinkEnabled: true,
         status: 'upcoming',
+        order: 0,
     });
     const [errors, setErrors] = useState<Partial<EventFormData>>({});
 
@@ -142,6 +144,7 @@ const ComponentsAppsEventCreate = () => {
             formDataToSend.append('knowMoreLink', formData.knowMoreLink || '');
             formDataToSend.append('knowMoreLinkEnabled', formData.knowMoreLinkEnabled.toString());
             formDataToSend.append('status', formData.status);
+            formDataToSend.append('order', formData.order.toString());
 
             // Add main image file if selected
             if (images.length > 0) {
@@ -328,6 +331,21 @@ const ComponentsAppsEventCreate = () => {
                     <label htmlFor="knowMoreLinkEnabled" className="ltr:ml-2 rtl:mr-2">
                         Enable Know More Link
                     </label>
+                </div>
+
+                {/* Display Order */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Display Order</label>
+                    <input
+                        name="order"
+                        type="number"
+                        className="form-input"
+                        placeholder="0"
+                        value={formData.order}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
+                        min="0"
+                    />
+                    <p className="text-gray-500 text-sm mt-1">Lower numbers appear first (0, 1, 2, etc.)</p>
                 </div>
 
                 {/* Status */}
