@@ -72,7 +72,12 @@ const ComponentsAuthLoginForm = () => {
                 {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
             </div>
 
-            <button type="submit" disabled={isSubmitting} className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] disabled:opacity-50">
+            <button
+                type="submit"
+                style={{ color: 'white' }}
+                disabled={isSubmitting}
+                className="btn bg-[#ED2629] !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] disabled:opacity-50"
+            >
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
             </button>
         </form>

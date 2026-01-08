@@ -25,7 +25,7 @@ const ComingSoonBoxed = () => {
                                 <p className="text-base font-bold leading-normal text-white-dark">We will be here in a shortwhile.....</p>
                             </div>
                             <ComponentsPagesComingSoonForm />
-                            <p className="dark:text-white">© {new Date().getFullYear()}. Mahesjeevan.</p>
+                            <p className="dark:text-white">© {new Date().getFullYear()}. K. S. Moorthi.</p>
                         </div>
                     </div>
                 </div>

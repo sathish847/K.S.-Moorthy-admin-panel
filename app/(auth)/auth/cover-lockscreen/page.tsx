@@ -50,7 +50,7 @@ const CoverLockScreen = () => {
                             </div>
                             <ComponentsAuthUnlockForm />
                         </div>
-                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.Mahesjeevan Portfolio. All Rights Reserved.</p>
+                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.K. S. Moorthi Portfolio. All Rights Reserved.</p>
                     </div>
                 </div>
             </div>

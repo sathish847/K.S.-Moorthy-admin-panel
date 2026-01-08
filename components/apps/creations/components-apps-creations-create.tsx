@@ -1,58 +1,38 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import IconArrowLeft from '@/components/icon/icon-arrow-left';
 
-interface CreationFormData {
-    title: string;
-    category: string;
+interface GalleryFormData {
+    title_en: string;
+    description_en: string;
+    title_ta: string;
+    description_ta: string;
     status: 'active' | 'inactive';
     image: File | null;
     order: number;
+    link: string;
 }
 
 const ComponentsAppsCreationsCreate = () => {
     const { data: session } = useSession();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [existingCategories, setExistingCategories] = useState<string[]>([]);
-    const [formData, setFormData] = useState<CreationFormData>({
-        title: '',
-        category: '',
+    const [formData, setFormData] = useState<GalleryFormData>({
+        title_en: '',
+        description_en: '',
+        title_ta: '',
+        description_ta: '',
         status: 'active',
         image: null,
         order: 0,
+        link: '',
     });
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [errors, setErrors] = useState<Partial<Record<keyof CreationFormData, string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof GalleryFormData, string>>>({});
 
-    // Fetch existing categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            if (!session?.accessToken) return;
-
-            try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/admin/all`, {
-                    headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
-                    },
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const categories = Array.from(new Set((data.works || []).map((item: any) => item.category).filter(Boolean))) as string[];
-                    setExistingCategories(categories);
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-        };
-
-        fetchCategories();
-    }, [session?.accessToken]);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
         setFormData((prev) => ({
@@ -61,7 +41,7 @@ const ComponentsAppsCreationsCreate = () => {
         }));
 
         // Clear error when user starts typing
-        if (errors[name as keyof CreationFormData]) {
+        if (errors[name as keyof GalleryFormData]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: undefined,
@@ -98,15 +78,15 @@ const ComponentsAppsCreationsCreate = () => {
     };
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<Record<keyof CreationFormData, string>> = {};
+        const newErrors: Partial<Record<keyof GalleryFormData, string>> = {};
 
         // Required field validations
-        if (!formData.title || !formData.title.trim()) {
-            newErrors.title = 'Title is required';
+        if (!formData.title_en || !formData.title_en.trim()) {
+            newErrors.title_en = 'English title is required';
         }
 
-        if (!formData.category || !formData.category.trim()) {
-            newErrors.category = 'Category is required';
+        if (!formData.description_en || !formData.description_en.trim()) {
+            newErrors.description_en = 'English description is required';
         }
 
         if (!formData.image) {
@@ -114,12 +94,12 @@ const ComponentsAppsCreationsCreate = () => {
         }
 
         // Additional validations
-        if (formData.title && formData.title.trim().length < 3) {
-            newErrors.title = 'Title must be at least 3 characters long';
+        if (formData.title_en && formData.title_en.trim().length < 3) {
+            newErrors.title_en = 'English title must be at least 3 characters long';
         }
 
-        if (formData.category && formData.category.trim().length < 2) {
-            newErrors.category = 'Category must be at least 2 characters long';
+        if (formData.description_en && formData.description_en.trim().length < 10) {
+            newErrors.description_en = 'English description must be at least 10 characters long';
         }
 
         // Image validation
@@ -145,7 +125,7 @@ const ComponentsAppsCreationsCreate = () => {
         if (!validateForm()) return;
 
         if (!session?.accessToken) {
-            alert('You must be logged in to create a creation');
+            alert('You must be logged in to create a gallery item');
             return;
         }
 
@@ -153,15 +133,18 @@ const ComponentsAppsCreationsCreate = () => {
 
         try {
             const formDataToSend = new FormData();
-            formDataToSend.append('title', formData.title);
-            formDataToSend.append('category', formData.category);
+            formDataToSend.append('title_en', formData.title_en);
+            formDataToSend.append('description_en', formData.description_en);
+            formDataToSend.append('title_ta', formData.title_ta);
+            formDataToSend.append('description_ta', formData.description_ta);
             formDataToSend.append('status', formData.status);
             formDataToSend.append('order', formData.order.toString());
+            formDataToSend.append('link', formData.link);
             if (formData.image) {
                 formDataToSend.append('image', formData.image);
             }
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,
@@ -171,15 +154,15 @@ const ComponentsAppsCreationsCreate = () => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Failed to create creation');
+                throw new Error(errorData.message || 'Failed to create gallery item');
             }
 
             const result = await response.json();
-            alert('Creation created successfully!');
+            alert('Gallery item created successfully!');
             router.push('/apps/creations');
         } catch (error) {
-            console.error('Error creating creation:', error);
-            alert(`Failed to create creation: ${error instanceof Error ? error.message : 'Please try again.'}`);
+            console.error('Error creating gallery item:', error);
+            alert(`Failed to create gallery item: ${error instanceof Error ? error.message : 'Please try again.'}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -192,37 +175,50 @@ const ComponentsAppsCreationsCreate = () => {
                     <button onClick={() => router.back()} className="btn btn-outline-secondary ltr:mr-3 rtl:ml-3">
                         <IconArrowLeft className="h-4 w-4" />
                     </button>
-                    <h2 className="text-xl font-semibold">Create New Creation</h2>
+                    <h2 className="text-xl font-semibold">Create New Gallery Item</h2>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title */}
+                {/* English Title */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Title *</label>
-                    <input name="title" type="text" className="form-input" placeholder="Enter creation title" value={formData.title} onChange={handleInputChange} required />
-                    {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+                    <label className="block text-sm font-medium mb-2">English Title *</label>
+                    <input name="title_en" type="text" className="form-input" placeholder="Enter title in English" value={formData.title_en} onChange={handleInputChange} required />
+                    {errors.title_en && <p className="text-red-500 text-sm mt-1">{errors.title_en}</p>}
                 </div>
 
-                {/* Category */}
+                {/* English Description */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Category *</label>
-                    <input
-                        name="category"
-                        type="text"
-                        className="form-input"
-                        placeholder="Enter category (e.g., Web Development, Design)"
-                        value={formData.category}
+                    <label className="block text-sm font-medium mb-2">English Description *</label>
+                    <textarea
+                        name="description_en"
+                        className="form-textarea"
+                        rows={4}
+                        placeholder="Enter description in English"
+                        value={formData.description_en}
                         onChange={handleInputChange}
-                        list="category-list"
                         required
                     />
-                    <datalist id="category-list">
-                        {existingCategories.map((category) => (
-                            <option key={category} value={category} />
-                        ))}
-                    </datalist>
-                    {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+                    {errors.description_en && <p className="text-red-500 text-sm mt-1">{errors.description_en}</p>}
+                </div>
+
+                {/* Tamil Title */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">தமிழ் தலைப்பு (Tamil Title)</label>
+                    <input name="title_ta" type="text" className="form-input" placeholder="தலைப்பை தமிழில் உள்ளீடு செய்யவும்" value={formData.title_ta} onChange={handleInputChange} />
+                </div>
+
+                {/* Tamil Description */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">தமிழ் விளக்கம் (Tamil Description)</label>
+                    <textarea
+                        name="description_ta"
+                        className="form-textarea"
+                        rows={4}
+                        placeholder="விளக்கத்தை தமிழில் உள்ளீடு செய்யவும்"
+                        value={formData.description_ta}
+                        onChange={handleInputChange}
+                    />
                 </div>
 
                 {/* Image Upload */}
@@ -266,10 +262,17 @@ const ComponentsAppsCreationsCreate = () => {
                     {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status}</p>}
                 </div>
 
+                {/* Navigation Link */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Navigation Link</label>
+                    <input name="link" type="url" className="form-input" placeholder="https://example.com/navigation-link" value={formData.link} onChange={handleInputChange} />
+                    <p className="text-gray-500 text-sm mt-1">Optional navigation link for the gallery item</p>
+                </div>
+
                 {/* Submit Button */}
                 <div className="flex justify-end">
                     <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                        {isSubmitting ? 'Creating...' : 'Create Creation'}
+                        {isSubmitting ? 'Creating...' : 'Create Gallery Item'}
                     </button>
                 </div>
             </form>

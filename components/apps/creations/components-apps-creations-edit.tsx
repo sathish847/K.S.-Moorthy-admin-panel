@@ -4,21 +4,27 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import IconArrowLeft from '@/components/icon/icon-arrow-left';
 
-interface CreationFormData {
-    title: string;
-    category: string;
+interface GalleryFormData {
+    title_en: string;
+    description_en: string;
+    title_ta: string;
+    description_ta: string;
     status: 'active' | 'inactive';
     image: File | null;
     order: number;
+    link: string;
 }
 
-interface CreationItem {
+interface GalleryItem {
     _id: string;
-    title: string;
-    category: string;
-    status: string;
+    title_en: string;
+    description_en: string;
+    title_ta: string;
+    description_ta: string;
     image: string;
+    status: string;
     order: number;
+    link: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -27,74 +33,75 @@ const ComponentsAppsCreationsEdit = () => {
     const { data: session } = useSession();
     const router = useRouter();
     const params = useParams();
-    const creationItemId = params.id as string;
+    const galleryItemId = params.id as string;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [existingCategories, setExistingCategories] = useState<string[]>([]);
-    const [formData, setFormData] = useState<CreationFormData>({
-        title: '',
-        category: '',
+    const [formData, setFormData] = useState<GalleryFormData>({
+        title_en: '',
+        description_en: '',
+        title_ta: '',
+        description_ta: '',
         status: 'active',
         image: null,
         order: 0,
+        link: '',
     });
     const [currentImage, setCurrentImage] = useState<string>('');
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [errors, setErrors] = useState<Partial<Record<keyof CreationFormData, string>>>({});
+    const [errors, setErrors] = useState<Partial<Record<keyof GalleryFormData, string>>>({});
 
-    // Fetch creation item data for editing
+    // Fetch gallery item data for editing
     useEffect(() => {
-        const fetchCreationItem = async () => {
-            if (!session?.accessToken || !creationItemId) {
+        const fetchGalleryItem = async () => {
+            if (!session?.accessToken || !galleryItemId) {
                 setLoading(false);
                 return;
             }
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/admin/all`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery/admin/all`, {
                     headers: {
                         Authorization: `Bearer ${session.accessToken}`,
                     },
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch creation items');
+                    throw new Error('Failed to fetch gallery items');
                 }
 
                 const data = await response.json();
-                const creationItem = data.works.find((item: CreationItem) => item._id === creationItemId);
+                const galleryItem = data.gallery.find((item: GalleryItem) => item._id === galleryItemId);
 
-                if (creationItem) {
+                if (galleryItem) {
                     setFormData({
-                        title: creationItem.title,
-                        category: creationItem.category,
-                        status: creationItem.status as 'active' | 'inactive',
+                        title_en: galleryItem.title_en,
+                        description_en: galleryItem.description_en,
+                        title_ta: galleryItem.title_ta || '',
+                        description_ta: galleryItem.description_ta || '',
+                        status: galleryItem.status as 'active' | 'inactive',
                         image: null, // Will be set if user uploads new image
-                        order: creationItem.order || 0,
+                        order: galleryItem.order || 0,
+                        link: galleryItem.link || '',
                     });
-                    setCurrentImage(creationItem.image);
-
-                    // Set existing categories from all works
-                    const categories = Array.from(new Set((data.works || []).map((item: any) => item.category).filter(Boolean))) as string[];
-                    setExistingCategories(categories);
+                    setCurrentImage(galleryItem.image);
                 } else {
-                    alert('Creation item not found');
+                    alert('Gallery item not found');
                     router.push('/apps/creations');
                 }
             } catch (error) {
-                console.error('Error fetching creation item:', error);
-                alert('Failed to load creation item data');
+                console.error('Error fetching gallery item:', error);
+                alert('Failed to load gallery item data');
                 router.push('/apps/creations');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchCreationItem();
-    }, [session?.accessToken, creationItemId, router]);
+        fetchGalleryItem();
+    }, [session?.accessToken, galleryItemId, router]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
         setFormData((prev) => ({
@@ -103,7 +110,7 @@ const ComponentsAppsCreationsEdit = () => {
         }));
 
         // Clear error when user starts typing
-        if (errors[name as keyof CreationFormData]) {
+        if (errors[name as keyof GalleryFormData]) {
             setErrors((prev) => ({
                 ...prev,
                 [name]: undefined,
@@ -140,18 +147,24 @@ const ComponentsAppsCreationsEdit = () => {
     };
 
     const validateForm = (): boolean => {
-        const newErrors: Partial<Record<keyof CreationFormData, string>> = {};
+        const newErrors: Partial<Record<keyof GalleryFormData, string>> = {};
 
-        if (!formData.title.trim()) newErrors.title = 'Title is required';
-        if (!formData.category.trim()) newErrors.category = 'Category is required';
-
-        // Additional validations
-        if (formData.title && formData.title.trim().length < 3) {
-            newErrors.title = 'Title must be at least 3 characters long';
+        // Required field validations
+        if (!formData.title_en || !formData.title_en.trim()) {
+            newErrors.title_en = 'English title is required';
         }
 
-        if (formData.category && formData.category.trim().length < 2) {
-            newErrors.category = 'Category must be at least 2 characters long';
+        if (!formData.description_en || !formData.description_en.trim()) {
+            newErrors.description_en = 'English description is required';
+        }
+
+        // Additional validations
+        if (formData.title_en && formData.title_en.trim().length < 3) {
+            newErrors.title_en = 'English title must be at least 3 characters long';
+        }
+
+        if (formData.description_en && formData.description_en.trim().length < 10) {
+            newErrors.description_en = 'English description must be at least 10 characters long';
         }
 
         // Image validation (only if user is uploading a new image)
@@ -177,7 +190,7 @@ const ComponentsAppsCreationsEdit = () => {
         if (!validateForm()) return;
 
         if (!session?.accessToken) {
-            alert('You must be logged in to update a creation');
+            alert('You must be logged in to update a gallery item');
             return;
         }
 
@@ -185,15 +198,18 @@ const ComponentsAppsCreationsEdit = () => {
 
         try {
             const formDataToSend = new FormData();
-            formDataToSend.append('title', formData.title);
-            formDataToSend.append('category', formData.category);
+            formDataToSend.append('title_en', formData.title_en);
+            formDataToSend.append('description_en', formData.description_en);
+            formDataToSend.append('title_ta', formData.title_ta);
+            formDataToSend.append('description_ta', formData.description_ta);
             formDataToSend.append('status', formData.status);
             formDataToSend.append('order', formData.order.toString());
+            formDataToSend.append('link', formData.link);
             if (formData.image) {
                 formDataToSend.append('image', formData.image);
             }
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/${creationItemId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery/${galleryItemId}`, {
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,
@@ -203,15 +219,15 @@ const ComponentsAppsCreationsEdit = () => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || 'Failed to update creation');
+                throw new Error(errorData.message || 'Failed to update gallery item');
             }
 
             const result = await response.json();
-            alert('Creation updated successfully!');
+            alert('Gallery item updated successfully!');
             router.push('/apps/creations');
         } catch (error) {
-            console.error('Error updating creation:', error);
-            alert(`Failed to update creation: ${error instanceof Error ? error.message : 'Please try again.'}`);
+            console.error('Error updating gallery item:', error);
+            alert(`Failed to update gallery item: ${error instanceof Error ? error.message : 'Please try again.'}`);
         } finally {
             setIsSubmitting(false);
         }
@@ -222,7 +238,7 @@ const ComponentsAppsCreationsEdit = () => {
             <div className="panel">
                 <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-gray-500">Loading creation data...</p>
+                    <p className="mt-4 text-gray-500">Loading gallery item data...</p>
                 </div>
             </div>
         );
@@ -235,37 +251,50 @@ const ComponentsAppsCreationsEdit = () => {
                     <button onClick={() => router.back()} className="btn btn-outline-secondary ltr:mr-3 rtl:ml-3">
                         <IconArrowLeft className="h-4 w-4" />
                     </button>
-                    <h2 className="text-xl font-semibold">Edit Creation</h2>
+                    <h2 className="text-xl font-semibold">Edit Gallery Item</h2>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title */}
+                {/* English Title */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Title *</label>
-                    <input name="title" type="text" className="form-input" placeholder="Enter creation title" value={formData.title} onChange={handleInputChange} required />
-                    {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
+                    <label className="block text-sm font-medium mb-2">English Title *</label>
+                    <input name="title_en" type="text" className="form-input" placeholder="Enter title in English" value={formData.title_en} onChange={handleInputChange} required />
+                    {errors.title_en && <p className="text-red-500 text-sm mt-1">{errors.title_en}</p>}
                 </div>
 
-                {/* Category */}
+                {/* English Description */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Category *</label>
-                    <input
-                        name="category"
-                        type="text"
-                        className="form-input"
-                        placeholder="Enter category (e.g., Web Development, Design)"
-                        value={formData.category}
+                    <label className="block text-sm font-medium mb-2">English Description *</label>
+                    <textarea
+                        name="description_en"
+                        className="form-textarea"
+                        rows={4}
+                        placeholder="Enter description in English"
+                        value={formData.description_en}
                         onChange={handleInputChange}
-                        list="edit-category-list"
                         required
                     />
-                    <datalist id="edit-category-list">
-                        {existingCategories.map((category) => (
-                            <option key={category} value={category} />
-                        ))}
-                    </datalist>
-                    {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+                    {errors.description_en && <p className="text-red-500 text-sm mt-1">{errors.description_en}</p>}
+                </div>
+
+                {/* Tamil Title */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">தமிழ் தலைப்பு (Tamil Title)</label>
+                    <input name="title_ta" type="text" className="form-input" placeholder="தலைப்பை தமிழில் உள்ளீடு செய்யவும்" value={formData.title_ta} onChange={handleInputChange} />
+                </div>
+
+                {/* Tamil Description */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">தமிழ் விளக்கம் (Tamil Description)</label>
+                    <textarea
+                        name="description_ta"
+                        className="form-textarea"
+                        rows={4}
+                        placeholder="விளக்கத்தை தமிழில் உள்ளீடு செய்யவும்"
+                        value={formData.description_ta}
+                        onChange={handleInputChange}
+                    />
                 </div>
 
                 {/* Current Image Display */}
@@ -317,10 +346,17 @@ const ComponentsAppsCreationsEdit = () => {
                     {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status}</p>}
                 </div>
 
+                {/* Navigation Link */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">Navigation Link</label>
+                    <input name="link" type="url" className="form-input" placeholder="https://example.com/navigation-link" value={formData.link} onChange={handleInputChange} />
+                    <p className="text-gray-500 text-sm mt-1">Optional navigation link for the gallery item</p>
+                </div>
+
                 {/* Submit Button */}
                 <div className="flex justify-end">
                     <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                        {isSubmitting ? 'Updating...' : 'Update Creation'}
+                        {isSubmitting ? 'Updating...' : 'Update Gallery Item'}
                     </button>
                 </div>
             </form>

@@ -15,13 +15,16 @@ import { Fragment } from 'react';
 import { IRootState } from '@/store';
 import { useSelector } from 'react-redux';
 
-interface CreationItem {
+interface GalleryItem {
     _id: string;
-    title: string;
-    category: string;
-    status: string;
+    title_en: string;
+    description_en: string;
+    title_ta: string;
+    description_ta: string;
     image: string;
+    status: string;
     order: number;
+    link: string;
     createdAt: string;
     updatedAt: string;
 }
@@ -31,12 +34,11 @@ const ComponentsAppsCreations = () => {
     const router = useRouter();
     const [searchCreations, setSearchCreations] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
-    const [categoryFilter, setCategoryFilter] = useState<string>('all');
-    const [creationItems, setCreationItems] = useState<CreationItem[]>([]);
+    const [creationItems, setCreationItems] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [viewModalOpen, setViewModalOpen] = useState(false);
-    const [selectedCreationItem, setSelectedCreationItem] = useState<CreationItem | null>(null);
+    const [selectedCreationItem, setSelectedCreationItem] = useState<GalleryItem | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -51,19 +53,19 @@ const ComponentsAppsCreations = () => {
             }
 
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/admin/all`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery/admin/all`, {
                     headers: {
                         Authorization: `Bearer ${session.accessToken}`,
                     },
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch creation items');
+                    throw new Error('Failed to fetch gallery items');
                 }
 
                 const data = await response.json();
-                // Sort creation items by order ascending, then by createdAt descending
-                const sortedCreationItems = (data.works || []).sort((a: CreationItem, b: CreationItem) => {
+                // Sort gallery items by order ascending, then by createdAt descending
+                const sortedCreationItems = (data.gallery || []).sort((a: GalleryItem, b: GalleryItem) => {
                     if (a.order !== b.order) {
                         return a.order - b.order;
                     }
@@ -80,18 +82,14 @@ const ComponentsAppsCreations = () => {
         fetchCreationItems();
     }, [session?.accessToken]);
 
-    // Filter creation items by search, status, and category
+    // Filter creation items by search and status
     const filteredCreationItems = creationItems.filter((item) => {
-        const matchesSearch = item.title.toLowerCase().includes(searchCreations.toLowerCase()) || item.category.toLowerCase().includes(searchCreations.toLowerCase());
+        const matchesSearch = item.title_en.toLowerCase().includes(searchCreations.toLowerCase()) || item.description_en.toLowerCase().includes(searchCreations.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-        const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
 
-        return matchesSearch && matchesStatus && matchesCategory;
+        return matchesSearch && matchesStatus;
     });
-
-    // Get unique categories for filter dropdown
-    const uniqueCategories = Array.from(new Set(creationItems.map((item) => item.category)));
 
     // Pagination logic
     const totalPages = Math.ceil(filteredCreationItems.length / itemsPerPage);
@@ -102,13 +100,13 @@ const ComponentsAppsCreations = () => {
     // Reset to page 1 when filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchCreations, statusFilter, categoryFilter]);
+    }, [searchCreations, statusFilter]);
 
     const handleNewCreationItem = () => {
         router.push('/apps/creations/create');
     };
 
-    const handleViewCreationItem = (item: CreationItem) => {
+    const handleViewCreationItem = (item: GalleryItem) => {
         setSelectedCreationItem(item);
         setViewModalOpen(true);
     };
@@ -128,7 +126,7 @@ const ComponentsAppsCreations = () => {
         }
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/${itemId}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery/${itemId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,
@@ -136,38 +134,38 @@ const ComponentsAppsCreations = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to delete creation item');
+                throw new Error('Failed to delete gallery item');
             }
 
-            // Refresh the creation items list
-            const fetchCreationItems = async () => {
+            // Refresh the gallery items list
+            const fetchGalleryItems = async () => {
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/works/admin/all`, {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKENDURL}/api/gallery/admin/all`, {
                         headers: {
                             Authorization: `Bearer ${session.accessToken}`,
                         },
                     });
 
                     if (!response.ok) {
-                        throw new Error('Failed to fetch creation items');
+                        throw new Error('Failed to fetch gallery items');
                     }
 
                     const data = await response.json();
-                    // Sort creation items by order ascending, then by createdAt descending
-                    const sortedCreationItems = (data.works || []).sort((a: CreationItem, b: CreationItem) => {
+                    // Sort gallery items by order ascending, then by createdAt descending
+                    const sortedGalleryItems = (data.gallery || []).sort((a: GalleryItem, b: GalleryItem) => {
                         if (a.order !== b.order) {
                             return a.order - b.order;
                         }
                         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                     });
-                    setCreationItems(sortedCreationItems);
+                    setCreationItems(sortedGalleryItems);
                 } catch (err) {
-                    setError(err instanceof Error ? err.message : 'Failed to fetch creation items');
+                    setError(err instanceof Error ? err.message : 'Failed to fetch gallery items');
                 }
             };
 
-            await fetchCreationItems();
-            alert('Creation deleted successfully!');
+            await fetchGalleryItems();
+            alert('Gallery item deleted successfully!');
         } catch (error) {
             console.error('Error deleting creation item:', error);
             alert('Failed to delete creation item. Please try again.');
@@ -179,11 +177,11 @@ const ComponentsAppsCreations = () => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
                     <span className="material-icons text-primary text-2xl">palette</span>
-                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">My Creations</h2>
+                    <h2 className="text-xl font-semibold ltr:ml-3 rtl:mr-3">Gallery</h2>
                 </div>
                 <button className="btn btn-primary" onClick={handleNewCreationItem}>
                     <IconPlus className="h-4 w-4 shrink-0 ltr:mr-2 rtl:ml-2" />
-                    New Creation
+                    New Gallery Item
                 </button>
             </div>
 
@@ -193,7 +191,7 @@ const ComponentsAppsCreations = () => {
                         <input
                             type="text"
                             className="form-input ltr:!pr-10 rtl:!pl-10"
-                            placeholder="Search creations..."
+                            placeholder="Search gallery items..."
                             value={searchCreations}
                             onChange={(e) => setSearchCreations(e.target.value)}
                         />
@@ -201,38 +199,25 @@ const ComponentsAppsCreations = () => {
                             <IconSearch />
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium">Status:</label>
-                            <select className="form-select w-32" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                                <option value="all">All</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <label className="text-sm font-medium">Category:</label>
-                            <select className="form-select w-40" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-                                <option value="all">All Categories</option>
-                                {uniqueCategories.map((category) => (
-                                    <option key={category} value={category}>
-                                        {category}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium">Status:</label>
+                        <select className="form-select w-32" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                            <option value="all">All</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
                     </div>
                 </div>
 
                 {loading ? (
                     <div className="text-center py-8">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                        <p className="mt-4 text-gray-500">Loading creations...</p>
+                        <p className="mt-4 text-gray-500">Loading gallery items...</p>
                     </div>
                 ) : error ? (
                     <div className="text-center py-8">
                         <span className="material-icons mx-auto text-6xl text-red-400">error</span>
-                        <h3 className="mt-4 text-lg font-medium text-red-600">Error loading creations</h3>
+                        <h3 className="mt-4 text-lg font-medium text-red-600">Error loading gallery items</h3>
                         <p className="mt-2 text-gray-500">{error}</p>
                     </div>
                 ) : (
@@ -244,16 +229,16 @@ const ComponentsAppsCreations = () => {
                                         <div className="flex items-start gap-4 flex-1">
                                             {item.image && (
                                                 <div className="shrink-0">
-                                                    <img src={item.image} alt={item.title} className="w-20 h-20 object-cover rounded-lg" />
+                                                    <img src={item.image} alt={item.title_en} className="w-20 h-20 object-cover rounded-lg" />
                                                 </div>
                                             )}
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-2">
-                                                    <h3 className="text-lg font-semibold text-primary">{item.title}</h3>
+                                                    <h3 className="text-lg font-semibold text-primary">{item.title_en}</h3>
                                                     <span className={`badge ${item.status === 'active' ? 'badge-outline-success' : 'badge-outline-danger'}`}>{item.status}</span>
                                                     <span className="badge badge-outline-primary">Order: {item.order}</span>
                                                 </div>
-                                                <p className="text-gray-600 dark:text-gray-400 mb-2">Category: {item.category}</p>
+                                                {item.description_en && <p className="text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{item.description_en}</p>}
                                                 <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                                                     <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                                                 </div>
@@ -298,7 +283,7 @@ const ComponentsAppsCreations = () => {
                         {totalPages > 1 && (
                             <div className="mt-6 flex items-center justify-between">
                                 <div className="text-sm text-gray-500">
-                                    Showing {startIndex + 1} to {Math.min(endIndex, filteredCreationItems.length)} of {filteredCreationItems.length} creations
+                                    Showing {startIndex + 1} to {Math.min(endIndex, filteredCreationItems.length)} of {filteredCreationItems.length} gallery items
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="btn btn-outline-secondary">
@@ -334,8 +319,8 @@ const ComponentsAppsCreations = () => {
                 {filteredCreationItems.length === 0 && !loading && (
                     <div className="text-center py-8">
                         <span className="material-icons mx-auto text-6xl text-gray-400">palette</span>
-                        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">No creations found</h3>
-                        <p className="mt-2 text-gray-500 dark:text-gray-400">Try adjusting your search terms, status, or category filter.</p>
+                        <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">No gallery items found</h3>
+                        <p className="mt-2 text-gray-500 dark:text-gray-400">Try adjusting your search terms or status filter.</p>
                     </div>
                 )}
             </div>
@@ -359,7 +344,7 @@ const ComponentsAppsCreations = () => {
                             >
                                 <DialogPanel as="div" className="panel my-8 w-full max-w-4xl overflow-hidden rounded-lg border-0 p-0 text-black dark:text-white-dark">
                                     <div className="flex items-center justify-between bg-[#fbfbfb] px-5 py-3 dark:bg-[#121c2c]">
-                                        <div className="text-lg font-bold">Creation Details</div>
+                                        <div className="text-lg font-bold">Gallery Item Details</div>
                                         <button type="button" className="text-white-dark hover:text-dark" onClick={() => setViewModalOpen(false)}>
                                             <IconX />
                                         </button>
@@ -370,12 +355,11 @@ const ComponentsAppsCreations = () => {
                                                 {/* Header */}
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <h1 className="text-2xl font-bold text-primary mb-2">{selectedCreationItem.title}</h1>
+                                                        <h1 className="text-2xl font-bold text-primary mb-2">{selectedCreationItem.title_en}</h1>
                                                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
                                                             <span className={`badge ${selectedCreationItem.status === 'active' ? 'badge-outline-success' : 'badge-outline-danger'}`}>
                                                                 {selectedCreationItem.status}
                                                             </span>
-                                                            <span className="font-medium">Category: {selectedCreationItem.category}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -385,8 +369,57 @@ const ComponentsAppsCreations = () => {
                                                     <div className="mb-6">
                                                         <h3 className="text-lg font-semibold mb-2">Image</h3>
                                                         <div className="max-w-md">
-                                                            <img src={selectedCreationItem.image} alt={selectedCreationItem.title} className="w-full h-auto rounded-lg shadow-lg" />
+                                                            <img src={selectedCreationItem.image} alt={selectedCreationItem.title_en} className="w-full h-auto rounded-lg shadow-lg" />
                                                         </div>
+                                                    </div>
+                                                )}
+
+                                                {/* English Content */}
+                                                <div className="mb-6">
+                                                    <h3 className="text-lg font-semibold mb-2">English</h3>
+                                                    <div className="space-y-2">
+                                                        <p>
+                                                            <strong>Title:</strong> {selectedCreationItem.title_en}
+                                                        </p>
+                                                        {selectedCreationItem.description_en && (
+                                                            <p>
+                                                                <strong>Description:</strong> {selectedCreationItem.description_en}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Tamil Content */}
+                                                {(selectedCreationItem.title_ta || selectedCreationItem.description_ta) && (
+                                                    <div className="mb-6">
+                                                        <h3 className="text-lg font-semibold mb-2">தமிழ் (Tamil)</h3>
+                                                        <div className="space-y-2">
+                                                            {selectedCreationItem.title_ta && (
+                                                                <p>
+                                                                    <strong>Title:</strong> {selectedCreationItem.title_ta}
+                                                                </p>
+                                                            )}
+                                                            {selectedCreationItem.description_ta && (
+                                                                <p>
+                                                                    <strong>Description:</strong> {selectedCreationItem.description_ta}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Navigation Link */}
+                                                {selectedCreationItem.link && (
+                                                    <div className="mb-6">
+                                                        <h3 className="text-lg font-semibold mb-2">Navigation Link</h3>
+                                                        <a
+                                                            href={selectedCreationItem.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-primary hover:text-primary-dark underline break-all"
+                                                        >
+                                                            {selectedCreationItem.link}
+                                                        </a>
                                                     </div>
                                                 )}
 

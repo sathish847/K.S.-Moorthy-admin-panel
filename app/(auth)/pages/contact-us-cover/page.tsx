@@ -45,7 +45,7 @@ const ContactUsCover = () => {
                             </div>
                             <ComponentsPagesContactUsForm />
                         </div>
-                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.Mahesjeevan.</p>
+                        <p className="absolute bottom-6 w-full text-center dark:text-white">© {new Date().getFullYear()}.K. S. Moorthi.</p>
                     </div>
                 </div>
             </div>

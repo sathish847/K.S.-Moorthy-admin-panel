@@ -124,7 +124,7 @@ const Header = () => {
     const [notifications, setNotifications] = useState([
         {
             id: 1,
-            profile: 'user-profile.jpeg',
+            profile: 'logos.png',
             message: '<strong class="text-sm mr-1">John Doe</strong>invite you to <strong>Prototyping</strong>',
             time: '45 min ago',
         },
@@ -184,7 +184,7 @@ const Header = () => {
                         <Link href="/" className="main-logo flex shrink-0 items-center">
                             <img className="inline w-8 ltr:-ml-1 rtl:-mr-1" src="/assets/images/logo.svg" alt="logo" />
                             <span className="hidden align-middle text-2xl  font-semibold  transition-all duration-300 ltr:ml-1.5 rtl:mr-1.5 dark:text-white-light md:inline">
-                                Mahesjeevan Portfolio
+                                K. S. Moorthi Portfolio
                             </span>
                         </Link>
                         <button
@@ -198,7 +198,7 @@ const Header = () => {
 
                     <div className="hidden ltr:mr-2 rtl:ml-2 sm:block">
                         <ul className="flex items-center space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
-                            <li>
+                            {/* <li>
                                 <Link href="/apps/calendar" className="block rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 hover:text-primary dark:bg-dark/40 dark:hover:bg-dark/60">
                                     <IconCalendar />
                                 </Link>
@@ -212,10 +212,11 @@ const Header = () => {
                                 <Link href="/apps/chat" className="block rounded-full bg-white-light/40 p-2 hover:bg-white-light/90 hover:text-primary dark:bg-dark/40 dark:hover:bg-dark/60">
                                     <IconChatNotification />
                                 </Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                     <div className="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] lg:space-x-2">
+                        {/*
                         <div className="sm:ltr:mr-auto sm:rtl:ml-auto">
                             <form
                                 className={`${search && '!block'} absolute inset-x-0 top-1/2 z-10 mx-4 hidden -translate-y-1/2 sm:relative sm:top-0 sm:mx-0 sm:block sm:translate-y-0`}
@@ -243,6 +244,7 @@ const Header = () => {
                                 <IconSearch className="mx-auto h-4.5 w-4.5 dark:text-[#d0d2d6]" />
                             </button>
                         </div>
+                        
                         <div>
                             {themeConfig.theme === 'light' ? (
                                 <button
@@ -280,6 +282,7 @@ const Header = () => {
                                 </button>
                             )}
                         </div>
+
                         <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
@@ -308,6 +311,7 @@ const Header = () => {
                                 </ul>
                             </Dropdown>
                         </div>
+
                         <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
@@ -363,6 +367,7 @@ const Header = () => {
                                 </ul>
                             </Dropdown>
                         </div>
+
                         <div className="dropdown shrink-0">
                             <Dropdown
                                 offset={[0, 8]}
@@ -437,18 +442,21 @@ const Header = () => {
                                 </ul>
                             </Dropdown>
                         </div>
+
+                        */}
+
                         {session && (
                             <div className="dropdown flex shrink-0">
                                 <Dropdown
                                     offset={[0, 8]}
                                     placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                                     btnClassName="relative group block"
-                                    button={<img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/user-profile.jpeg" alt="userProfile" />}
+                                    button={<img className="h-9 w-9 rounded-full object-cover saturate-50 group-hover:saturate-100" src="/assets/images/logos.png" alt="userProfile" />}
                                 >
                                     <ul className="w-[230px] !py-0 font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
                                         <li>
                                             <div className="flex items-center px-4 py-4">
-                                                <img className="h-10 w-10 rounded-md object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
+                                                <img className="h-10 w-10 rounded-md object-cover" src="/assets/images/logos.png" alt="userProfile" />
                                                 <div className="truncate ltr:pl-4 rtl:pr-4">
                                                     <h4 className="text-base">
                                                         {session.user?.name || 'User'}
@@ -460,7 +468,7 @@ const Header = () => {
                                                 </div>
                                             </div>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <Link href="/users/profile" className="dark:hover:text-white">
                                                 <IconUser className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
                                                 Profile
@@ -471,7 +479,7 @@ const Header = () => {
                                                 <IconMail className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
                                                 Inbox
                                             </Link>
-                                        </li>
+                                        </li> */}
                                         <li>
                                             <Link href="/auth/boxed-lockscreen" className="dark:hover:text-white">
                                                 <IconLockDots className="h-4.5 w-4.5 shrink-0 ltr:mr-2 rtl:ml-2" />
