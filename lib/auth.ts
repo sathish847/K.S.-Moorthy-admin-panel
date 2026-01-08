@@ -75,5 +75,9 @@ export const authOptions: NextAuthOptions = {
             };
             return session;
         },
+        async redirect({ url, baseUrl }) {
+            // Always redirect to dashboard after login, ignore callbackUrl
+            return baseUrl;
+        },
     },
 };

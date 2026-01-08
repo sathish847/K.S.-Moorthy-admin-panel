@@ -617,7 +617,7 @@ const ComponentsWidgets = () => {
                 curve: 'smooth',
                 width: 2,
             },
-            colors: ['#4361ee'],
+            colors: ['#ED2629'],
             grid: {
                 padding: {
                     top: 5,
