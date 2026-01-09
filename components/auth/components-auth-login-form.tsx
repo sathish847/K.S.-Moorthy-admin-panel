@@ -34,7 +34,7 @@ const ComponentsAuthLoginForm = () => {
             } else if (result?.ok) {
                 // Wait a moment for session to be established
                 setTimeout(() => {
-                    router.push('/');
+                    router.push('/apps/creations');
                 }, 100);
             }
         } catch (err) {

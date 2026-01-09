@@ -148,31 +148,8 @@ const Header = () => {
 
     const [search, setSearch] = useState(false);
 
-    const handleLogout = async () => {
-        try {
-            // Get the current session to extract the JWT token
-            const session = await getSession();
-            const token = session?.accessToken;
-
-            if (token) {
-                // Call backend logout endpoint
-                await fetch(`${process.env.BACKEND_URL}/api/auth/logout`, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        refreshToken: undefined, // Optional refresh token
-                    }),
-                });
-            }
-        } catch (error) {
-            console.error('Backend logout failed:', error);
-            // Continue with client-side logout even if backend call fails
-        }
-
-        // Always do client-side logout
+    const handleLogout = () => {
+        // Navigate to login page
         signOut({ callbackUrl: '/auth/cover-login' });
     };
 

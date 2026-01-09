@@ -22,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
             <head>
                 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+                <link rel="icon" href="/assets/images/logos.png" />
             </head>
             <body className={nunito.variable}>
                 <ProviderComponent>{children}</ProviderComponent>

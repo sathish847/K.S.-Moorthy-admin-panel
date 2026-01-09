@@ -76,6 +76,10 @@ export const authOptions: NextAuthOptions = {
             return session;
         },
         async redirect({ url, baseUrl }) {
+            // Allow redirects to login pages for logout
+            if (url.includes('/auth/')) {
+                return url;
+            }
             // Always redirect to dashboard after login, ignore callbackUrl
             return baseUrl;
         },
