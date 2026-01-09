@@ -172,7 +172,7 @@ const ComponentsAppsCreationsCreate = () => {
         <div className="panel">
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                    <button onClick={() => router.back()} className="btn btn-outline-secondary ltr:mr-3 rtl:ml-3">
+                    <button onClick={() => router.back()} className="btn ltr:mr-3 rtl:ml-3" style={{ backgroundColor: '#805DCA', color: 'white', border: '1px solid #805DCA' }}>
                         <IconArrowLeft className="h-4 w-4" />
                     </button>
                     <h2 className="text-xl font-semibold">Create New Gallery Item</h2>
